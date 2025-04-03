@@ -56,7 +56,7 @@
                                                 <input type="text" class="form-control" id="companyNameInput"
                                                     placeholder="Enter legal company name" name="company_name"
                                                     value="{{ $distributor->company_name ?? '' }}">
-                                                <input type="hidden" name="distributor_id"
+                                                <input id="distributor_id" type="hidden" name="distributor_id"
                                                     value="{{ $distributor->id ?? '' }}">
                                             </div>
                                         </div>
@@ -322,10 +322,7 @@
     @push('page-script')
         <script>
             $(document).ready(function() {
-                $('.country-select2').select2();
-                $('.country-select2').on('select2:select', function() {
-                    let selectedCountry = $(this).val(); // Get selected country value
-
+                function runAjaxRequest(selectedCountry) {
                     $.ajax({
                         url: "{{ route('distributor.get_distributor_country_dialcode') }}",
                         type: "POST",
@@ -343,6 +340,18 @@
                             console.log("Error:", xhr.responseText);
                         }
                     });
+
+
+                }
+                if ($('#distributor_id').val() !== '') {
+                    let country = $('.country-select2').val();
+
+                    runAjaxRequest(country)
+                }
+                $('.country-select2').select2();
+                $('.country-select2').on('select2:select', function() {
+                    let selectedCountry = $(this).val();
+                    runAjaxRequest(selectedCountry)
                 });
             })
         </script>

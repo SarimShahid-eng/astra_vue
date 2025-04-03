@@ -20,16 +20,18 @@
                 <div class="col-lg-12">
                     <div class="card">
                         <div class="card-header">
-                            <h4 class="card-title mb-0">Distributor List</h4>
-                        </div>
+                            <h4 class="card-title mb-0">Device Product List</h4>
+                        </div><!-- end card header -->
+
                         <div class="card-body">
                             <div class="listjs-table" id="customerList">
                                 <div class="row g-4 mb-3">
                                     <div class="col-sm-auto">
                                         <div>
-                                            <a href="{{ route('distributor.add') }}" class="btn btn-success add-btn"
+                                            <a href="{{ route('device_info.product_add') }}" class="btn btn-success add-btn"
                                                 id="create-btn"><i class="ri-add-line align-bottom me-1"></i> Add</a>
-
+                                            <button class="btn btn-soft-danger" onClick="deleteMultiple()"><i
+                                                    class="ri-delete-bin-2-line"></i></button>
                                         </div>
                                     </div>
                                     <div class="col-sm">
@@ -42,50 +44,52 @@
                                     </div>
                                 </div>
 
-                                <div class="table-responsive">
-                                    <table class="table table-bordered">
+                                <div class="table-responsive table-card mt-3 mb-1">
+                                    <table class="table align-middle table-nowrap" id="customerTable">
                                         <thead class="table-light">
                                             <tr>
-                                                <th>#</th>
-                                                <th>Firstname</th>
-                                                <th>Job title</th>
-                                                <th>Department</th>
-                                                <th>W.Email</th>
-                                                <th>Company Name</th>
-                                                <th>Country</th>
-                                                <th>City</th>
-                                                <th>State</th>
-                                                <th>Action</th>
+                                                <th scope="col" style="width: 50px;">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" id="checkAll"
+                                                            value="option">
+                                                    </div>
+                                                </th>
+                                                <th class="sort" data-sort="customer_name">Name</th>
+
+                                                <th class="sort" data-sort="action">Action</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
-                                            @foreach ($distributors as $key => $distributor)
+                                        <tbody class="list form-check-all">
+                                            @foreach ($device_products as $device_product)
                                                 <tr>
-                                                    <td>{{ ++$key }}</td>
-                                                    <td>{{ $distributor->user->name }}</td>
-                                                    <td>{{ $distributor->job_title }}</td>
-                                                    <td>{{ $distributor->department }}</td>
-                                                    <td>{{ $distributor->user->email }}</td>
-                                                    <td>{{ $distributor->company_name }}</td>
-                                                    <td>{{ $distributor->country }}</td>
-                                                    <td>{{ $distributor->city }}</td>
-                                                    <td>{{ $distributor->province }}</td>
+
+                                                    <th scope="row">
+                                                        <div class="form-check">
+                                                            <input class="form-check-input" type="checkbox"
+                                                                value="{{ $device_product->id }}" name="chk_child"
+                                                                value="option1">
+                                                        </div>
+                                                    </th>
+                                                    <td class="customer_name">{{ $device_product->name }}</td>
+
+
                                                     <td>
                                                         <div class="d-flex gap-2">
                                                             <div class="edit">
-                                                                <a href="{{ route('distributor.edit', $distributor->id) }}"
-                                                                    class="btn btn-sm btn-warning edit-item-btn">Edit</a>
+                                                                <a href="{{ route('device_info.product_edit', $device_product->id) }}"
+                                                                    class="btn btn-sm btn-success edit-item-btn">Edit</a>
                                                             </div>
                                                             <div class="remove">
                                                                 <button class="btn btn-sm btn-danger remove-item-btn"
                                                                     data-bs-toggle="modal"
-                                                                    data-bs-target="#remove_data_{{ $distributor->id }}">Remove</button>
+                                                                    data-id="{{ $device_product->id }}"
+                                                                    data-bs-target="#remove_data">Remove</button>
                                                             </div>
                                                         </div>
                                                     </td>
                                                 </tr>
-                                                <div id="remove_data_{{ $distributor->id }}" class="modal fade zoomIn"
-                                                    tabindex="-1" aria-hidden="true">
+                                                <div id="remove_data" class="modal fade zoomIn" tabindex="-1"
+                                                    aria-hidden="true">
                                                     <div class="modal-dialog modal-dialog-centered">
                                                         <div class="modal-content">
                                                             <div class="modal-header">
@@ -100,17 +104,16 @@
                                                                     <div class="mt-4 pt-2 fs-15 mx-4 mx-sm-5">
                                                                         <h4>Are you sure ?</h4>
                                                                         <p class="text-muted mx-4 mb-0">Are you sure you
-                                                                            want to remove this distributor ?</p>
+                                                                            want to add these remarks ?</p>
                                                                     </div>
                                                                 </div>
                                                                 <div class="d-flex gap-2 justify-content-center mt-4 mb-2">
                                                                     <button type="button" class="btn w-sm btn-light"
                                                                         data-bs-dismiss="modal">Close</button>
                                                                     <button onclick="ajaxRequest(this)"
-                                                                        data-url="{{ route('distributor.delete', $distributor->id) }}"
+                                                                        data-url="{{ route('device_info.product_delete', $device_product->id) }}"
                                                                         class="btn w-sm btn-danger"
-                                                                        id="delete-notification">Yes, Delete
-                                                                        It!</button>
+                                                                        id="delete-notification">Yes, Delete It!</button>
                                                                 </div>
                                                             </div>
 
@@ -120,6 +123,16 @@
                                             @endforeach
                                         </tbody>
                                     </table>
+                                    <div class="noresult" style="display: none">
+                                        <div class="text-center">
+                                            <lord-icon src="https://cdn.lordicon.com/msoeawqm.json" trigger="loop"
+                                                colors="primary:#121331,secondary:#08a88a"
+                                                style="width:75px;height:75px"></lord-icon>
+                                            <h5 class="mt-2">Sorry! No Result Found</h5>
+                                            <p class="text-muted mb-0">We've searched more than 150+ Orders We did not find
+                                                any orders for you search.</p>
+                                        </div>
+                                    </div>
                                 </div>
 
                                 <div class="d-flex justify-content-end">
@@ -144,4 +157,5 @@
             <!-- end row -->
         </div>
     </div>
+    <script></script>
 @endsection

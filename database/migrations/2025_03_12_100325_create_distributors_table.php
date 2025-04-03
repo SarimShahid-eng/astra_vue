@@ -32,8 +32,7 @@ return new class extends Migration
             $table->string('lastname');
             $table->string('job_title');
             $table->string('department');
-            // $table->bigInteger('dpn');
-            $table->foreignId('user_id')->constrained();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }

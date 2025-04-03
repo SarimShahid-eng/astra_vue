@@ -7,6 +7,7 @@ use App\Models\Business;
 use App\Models\Distributor;
 use Illuminate\Http\Request;
 use libphonenumber\PhoneNumberUtil;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Propaganistas\LaravelPhone\PhoneNumber;
 use Propaganistas\LaravelPhone\Rules\Phone;
@@ -16,7 +17,7 @@ class DistributorController extends Controller
 {
     public function index()
     {
-        $distributors = Distributor::all();
+        $distributors = Distributor::with('user')->get();
         return view('admin.distributor.index', compact('distributors'));
     }
     public function create()
@@ -28,58 +29,62 @@ class DistributorController extends Controller
 
     public function store(Request $request)
     {
-        // Validating phone  country wise
+
         $countryInput = $request->input('country');
+        // if ($countryInput) {
+        // dd($request->all());
         list($countryCode, $countryName) = explode('-', $countryInput) + [null, null];
-        if (!$countryCode) {
+        if (!$countryCode || !$countryInput) {
             throw ValidationException::withMessages([
-                'country' => ['Invalid country selected. Please choose a valid country.']
+                ['Invalid country selected. Please choose a valid country.']
             ]);
         }
-        // Get user input (direct phone & main phone)
+
         $dpn = trim($request->input('dpn')); // User enters 3XXXXXXXXX
         $mpn = trim($request->input('mpn')); // User enters 3XXXXXXXXX
 
-        // Concatenate country dial code with user input
-        $fullDpn = '+' . $this->getCountryDialCode($countryCode) . $dpn;
-        $fullMpn = '+' . $this->getCountryDialCode($countryCode) . $mpn;
-        $validator = Validator::make(
-            [
-                'dpn' => $fullDpn,
-                'mpn' => $fullMpn,
-            ],
-            [
-                'dpn' => ['required', new Phone($countryCode)],
-                'mpn' => ['required', new Phone($countryCode)],
-            ],
-            [
-                'dpn.required' => 'The direct phone number is required.',
-                'mpn.required' => 'The main phone number is required.',
-                'dpn.phone' => 'Invalid direct phone number for ' . ($countryName ?? 'the selected country') . '. Please enter a valid number.',
-                'mpn.phone' => 'Invalid main phone number for ' . ($countryName ?? 'the selected country') . '. Please enter a valid number.',
-            ]
-        );
+        if ($mpn || $dpn) {
+            // Concatenate country dial code with user input
+            $fullDpn = '+' . $this->getCountryDialCode($countryCode) . $dpn;
+            $fullMpn = '+' . $this->getCountryDialCode($countryCode) . $mpn;
 
-        // Throw a 422 error if validation fails
-        if ($validator->fails()) {
-            $errors = $validator->errors()->toArray();
-            foreach ($errors as $key => &$errorMessages) {
-                foreach ($errorMessages as &$message) {
-                    if ($message === 'validation.phone') {
-                        $message =  'Invalid Direct Phone Number or Main number.Kindly recheck to proceed';
+            // Use the full numbers for validation
+            $validator = Validator::make(
+                [
+                    'dpn' => $fullDpn,  // Use full number for validation
+                    'mpn' => $fullMpn,  // Use full number for validation
+                ],
+                [
+                    'dpn' => $request->filled('dpn') && !$request->has('distributor_id') ? ['required', new Phone($countryCode)] : ['nullable', new Phone($countryCode)],
+                    'mpn' => $request->filled('mpn') && !$request->has('distributor_id') ? ['required', new Phone($countryCode)] : ['nullable', new Phone($countryCode)],
+                ],
+                [
+                    'dpn.required' => 'The direct phone number is required.',
+                    'mpn.required' => 'The main phone number is required.',
+                    'dpn.phone' => 'Invalid direct phone number for ' . ($countryName ?? 'the selected country') . '. Please enter a valid number.',
+                    'mpn.phone' => 'Invalid main phone number for ' . ($countryName ?? 'the selected country') . '. Please enter a valid number.',
+                ]
+            );
+
+            // Throw a 422 error if validation fails
+            if ($validator->fails()) {
+                $errors = $validator->errors()->toArray();
+                foreach ($errors as $key => &$errorMessages) {
+                    foreach ($errorMessages as &$message) {
+                        if ($message === 'validation.phone') {
+                            $message =  'Invalid Direct Phone Number or Main number.Kindly recheck to proceed';
+                        }
                     }
                 }
+                throw ValidationException::withMessages($errors);
             }
-            throw ValidationException::withMessages($errors);
         }
-
-
-        $Input =   $request->validate(
+        $Input = $request->validate(
             [
                 'firstname' => 'required|string|max:255',
                 'lastname' => 'required|string|max:255',
                 'password' => [
-                    $request->has('update_id') ? 'nullable' : 'required',
+                    $request->has('distributor_id') ? 'nullable' : 'required',
                     'min:8',
                     // 'confirmed'
                 ],
@@ -99,30 +104,22 @@ class DistributorController extends Controller
                 'state' => 'required|string|max:255',
                 'postal_code' => 'required|integer',
                 'country' => 'required|string|max:255',
-                // 'mpn' => ['required', new Phone($countryCode)],
                 'business_email' => 'required|email',
                 //territory ended
             ],
             [
-                'mpn' => ['required', new Phone($countryCode)],
                 'confirmpassword.same' => 'The confirmation password must match the password.',
-                // 'dpn' => 'The phone number must be 11 digits'
-                'mpn' => [
-                    'phone' => 'Invalid Main phone number for ' . ($countryName ?? 'the selected country') . '.',
-                ],
-                'dpn' => [
-                    'phone' => 'Invalid Direct phone number for ' . ($countryName ?? 'the selected country') . '.',
-                ]
             ]
         );
 
         $userData = [
             'name' => $Input['firstname'],
-            'email' =>    $Input['work_email'],
-            'password' =>  bcrypt($Input['password']),
-            'role' =>     'distributor',
-            'number' =>   $fullDpn,
+            'email' => $Input['work_email'],
+            'password' => bcrypt($Input['password']),
+            'role' => 'distributor',
+            'number' => $fullDpn ?? '',
         ];
+
         $distributorData = [
             'company_name' => $Input['company_name'],
             'reg_no' => $Input['registration_number'],
@@ -136,18 +133,21 @@ class DistributorController extends Controller
             'province' => $Input['state'],
             'postal_code' => $Input['postal_code'],
             'country' => $countryName,
-            // 'country' => $Input['country'],
-            'mpn' => $fullMpn, //main phone number
-            // 'mpn' => , //main phone number
+            'mpn' => $fullMpn ?? '', //main phone number
             'business_email' => $Input['business_email'],
-            //territory ended
             'lastname' => $Input['lastname'],
             'job_title' => $Input['job_title'],
             'department' => $Input['department'],
-            // user details ended
         ];
+
         if ($request->distributor_id != null) {
             $distributor = Distributor::find($request->distributor_id);
+            if (empty($fullMpn)) {
+                unset($distributorData['mpn']);
+            }
+            if (empty($fullDpn)) {
+                unset($userData['number']);
+            }
             $distributor->update($distributorData);
             $user = User::find($distributor->user_id);
             $user->update($userData);
@@ -158,9 +158,16 @@ class DistributorController extends Controller
         }
 
 
+        if (Auth::user()->role === 'distributor') {
+            return response()->json([
+                'success' => 'Distributor Saved',
+                'redirect' => route('distributor.add'),
+            ]);
+        }
+        // if(Auth::user()->role === 'distributor'){
         return response()->json([
             'success' => 'Distributor Saved',
-            'redirect' => route('distributor.index')
+            'redirect' =>  route('distributor.index')
         ]);
     }
     public function getCountryDialCode($countryCode)
@@ -186,7 +193,9 @@ class DistributorController extends Controller
     }
     function destroy($id)
     {
-        $distributor = Distributor::destroy($id);
+        $distributor = Distributor::findOrFail($id);
+        $distributor->user()->delete();
+        $distributor->delete();
         return response()->json([
             'success' => 'Distributor Saved',
             'redirect' => route('distributor.index')

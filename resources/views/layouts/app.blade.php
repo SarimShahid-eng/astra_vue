@@ -159,101 +159,166 @@
                     <div id="two-column-menu">
                     </div>
                     <ul class="navbar-nav" id="navbar-nav">
-                        <li class="menu-title"><span data-key="t-menu">Menu</span></li>
-                        <li class="nav-item">
-                            <a class="nav-link menu-link" href="{{ route('home') }}" role="button"
-                                aria-expanded="false" aria-controls="sidebarDashboards">
-                                <i class="ri-dashboard-2-line"></i> <span data-key="t-dashboards">Dashboards</span>
-                            </a>
-                        </li> <!-- end Dashboard Menu -->
+                        @role('admin')
+                            <li class="menu-title"><span data-key="t-menu">Menu</span></li>
+                            <li class="nav-item">
+                                <a class="nav-link menu-link" href="{{ route('home') }}" role="button"
+                                    aria-expanded="false" aria-controls="sidebarDashboards">
+                                    <i class="ri-dashboard-2-line"></i> <span data-key="t-dashboards">Dashboards</span>
+                                </a>
+                            </li> <!-- end Dashboard Menu -->
 
 
-                        <li class="nav-item">
-                            <a class="nav-link menu-link" href="{{ route('user.index') }}" role="button"
-                                aria-expanded="false" aria-controls="sidebarApps">
-                                <i class="ri-account-circle-line"></i> Customers
-                            </a>
+                            <li class="nav-item">
+                                <a class="nav-link menu-link" href="{{ route('user.index') }}" role="button"
+                                    aria-expanded="false" aria-controls="sidebarApps">
+                                    <i class="ri-account-circle-line"></i> Customers
+                                </a>
 
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link menu-link" href="{{ route('front.index') }}" role="button"
-                                aria-expanded="false" aria-controls="sidebarApps">
-                                <i class="ri-account-circle-line"></i> Home Pagee
-                            </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link menu-link" href="{{ route('front.index') }}" role="button"
+                                    aria-expanded="false" aria-controls="sidebarApps">
+                                    <i class="ri-account-circle-line"></i> Home Pagee
+                                </a>
 
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link menu-link" href="#user" data-bs-toggle="collapse" role="button"
-                                aria-expanded="false" aria-controls="sidebarApps">
-                                <i class="ri-product-hunt-line"></i> <span data-key="t-authentication">Product</span>
-                            </a>
-                            <div class="collapse menu-dropdown" id="user">
-                                <ul class="nav nav-sm flex-column">
-                                    <li class="nav-item">
-                                        <a href="{{ route('category.index') }}" class="nav-link"
-                                            data-key="t-calendar"> Category </a>
-                                    </li>
-                                </ul>
-                                <ul class="nav nav-sm flex-column">
-                                    <li class="nav-item">
-                                        <a href="{{ route('sub_category.index') }}" class="nav-link"
-                                            data-key="t-calendar"> Sub Category </a>
-                                    </li>
-                                </ul>
-                                <ul class="nav nav-sm flex-column">
-                                    <li class="nav-item">
-                                        <a href="{{ route('product.index') }}" class="nav-link"
-                                            data-key="t-calendar"> Product </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link menu-link" href="#user" data-bs-toggle="collapse" role="button"
+                                    aria-expanded="false" aria-controls="sidebarApps">
+                                    <i class="ri-product-hunt-line"></i> <span data-key="t-authentication">Product</span>
+                                </a>
+                                <div class="collapse menu-dropdown" id="user">
+                                    <ul class="nav nav-sm flex-column">
+                                        <li class="nav-item">
+                                            <a href="{{ route('category.index') }}" class="nav-link"
+                                                data-key="t-calendar"> Category </a>
+                                        </li>
+                                    </ul>
+                                    <ul class="nav nav-sm flex-column">
+                                        <li class="nav-item">
+                                            <a href="{{ route('sub_category.index') }}" class="nav-link"
+                                                data-key="t-calendar"> Sub Category </a>
+                                        </li>
+                                    </ul>
+                                    <ul class="nav nav-sm flex-column">
+                                        <li class="nav-item">
+                                            <a href="{{ route('product.index') }}" class="nav-link"
+                                                data-key="t-calendar"> Product </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
 
-                        <li class="nav-item">
-                            <a class="nav-link menu-link" href="{{ route('blog.index') }}" role="button"
-                                aria-expanded="false" aria-controls="sidebarApps">
-                                <i class="ri-account-circle-line"></i> Blog Section
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link menu-link" href="{{ route('distributor.index') }}" role="button"
-                                aria-expanded="false" aria-controls="sidebarApps">
-                                <i class="ri-account-circle-line"></i> Distributor
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link menu-link" href="{{ route('about.index') }}" role="button"
-                                aria-expanded="false" aria-controls="sidebarApps">
-                                <i class="ri-account-circle-line"></i> About
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link menu-link" href="#contact" data-bs-toggle="collapse" role="button"
-                                aria-expanded="false" aria-controls="sidebarApps">
-                                <i class="ri-product-hunt-line"></i> <span data-key="t-authentication">Contact</span>
-                            </a>
-                            <div class="collapse menu-dropdown" id="contact">
-                                <ul class="nav nav-sm flex-column">
-                                    <li class="nav-item">
-                                        <a href="{{ route('contact.index') }}" class="nav-link"
-                                            data-key="t-calendar"> Contact Page </a>
-                                    </li>
-                                </ul>
-                                <ul class="nav nav-sm flex-column">
-                                    <li class="nav-item">
-                                        <a href="{{ route('contact.comments') }}" class="nav-link"
-                                            data-key="t-calendar"> Contact Comments </a>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link menu-link" href="{{ route('user.complain') }}" role="button"
-                                aria-expanded="false" aria-controls="sidebarApps">
-                                <i class="ri-account-circle-line"></i> Complaints Box
-                            </a>
-                        </li>
-
+                            <li class="nav-item">
+                                <a class="nav-link menu-link" href="{{ route('blog.index') }}" role="button"
+                                    aria-expanded="false" aria-controls="sidebarApps">
+                                    <i class="ri-account-circle-line"></i> Blog Section
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link menu-link" href="#distributor" data-bs-toggle="collapse"
+                                    role="button" aria-expanded="false" aria-controls="sidebarApps">
+                                    <i class="ri-product-hunt-line"></i> <span
+                                        data-key="t-authentication">Distributor</span>
+                                </a>
+                                <div class="collapse menu-dropdown" id="distributor">
+                                    @role('admin')
+                                        <ul class="nav nav-sm flex-column">
+                                            <li class="nav-item">
+                                                <a href="{{ route('distributor.index') }}" class="nav-link"
+                                                    data-key="t-calendar"> Display Distributors </a>
+                                            </li>
+                                        </ul>
+                                    @endrole
+                                    <ul class="nav nav-sm flex-column">
+                                        <li class="nav-item">
+                                            <a href="{{ route('distributor.add') }}" class="nav-link"
+                                                data-key="t-calendar"> Register Distributor </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                            {{-- <li class="nav-item">
+                                <a class="nav-link menu-link" href="{{ route('distributor.index') }}" role="button"
+                                    aria-expanded="false" aria-controls="sidebarApps">
+                                    <i class="ri-account-circle-line"></i> Distributor
+                                </a>
+                            </li> --}}
+                        @endrole
+                        @role('distributor', 'admin')
+                            <li class="nav-item">
+                                <a class="nav-link menu-link" href="#deviceInfo" data-bs-toggle="collapse"
+                                    role="button" aria-expanded="false" aria-controls="sidebarApps">
+                                    <i class="ri-product-hunt-line"></i> <span data-key="t-authentication">Device
+                                        Information</span>
+                                </a>
+                                <div class="collapse menu-dropdown" id="deviceInfo">
+                                    @role('admin')
+                                        <ul class="nav nav-sm flex-column">
+                                            <li class="nav-item">
+                                                <a href="{{ route('device_info.product_index') }}" class="nav-link"
+                                                    data-key="t-calendar"> Device Products </a>
+                                            </li>
+                                        </ul>
+                                        <ul class="nav nav-sm flex-column">
+                                            <li class="nav-item">
+                                                <a href="{{ route('device_info.product_config_index') }}" class="nav-link"
+                                                    data-key="t-calendar"> Device Configuration </a>
+                                            </li>
+                                        </ul>
+                                    @endrole
+                                    @role('distributor')
+                                        <ul class="nav nav-sm flex-column">
+                                            <li class="nav-item">
+                                                <a href="{{ route('device_info.add') }}" class="nav-link"
+                                                    data-key="t-calendar"> Register New Device </a>
+                                            </li>
+                                        </ul>
+                                        <ul class="nav nav-sm flex-column">
+                                            <li class="nav-item">
+                                                <a href="{{ route('device_info.index') }}" class="nav-link"
+                                                    data-key="t-calendar"> Registration History </a>
+                                            </li>
+                                        </ul>
+                                    @endrole
+                                </div>
+                            </li>
+                        @endrole
+                        @role('admin')
+                            <li class="nav-item">
+                                <a class="nav-link menu-link" href="{{ route('about.index') }}" role="button"
+                                    aria-expanded="false" aria-controls="sidebarApps">
+                                    <i class="ri-account-circle-line"></i> About
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link menu-link" href="#contact" data-bs-toggle="collapse" role="button"
+                                    aria-expanded="false" aria-controls="sidebarApps">
+                                    <i class="ri-product-hunt-line"></i> <span data-key="t-authentication">Contact</span>
+                                </a>
+                                <div class="collapse menu-dropdown" id="contact">
+                                    <ul class="nav nav-sm flex-column">
+                                        <li class="nav-item">
+                                            <a href="{{ route('contact.index') }}" class="nav-link"
+                                                data-key="t-calendar"> Contact Page </a>
+                                        </li>
+                                    </ul>
+                                    <ul class="nav nav-sm flex-column">
+                                        <li class="nav-item">
+                                            <a href="{{ route('contact.comments') }}" class="nav-link"
+                                                data-key="t-calendar"> Contact Comments </a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link menu-link" href="{{ route('user.complain') }}" role="button"
+                                    aria-expanded="false" aria-controls="sidebarApps">
+                                    <i class="ri-account-circle-line"></i> Complaints Box
+                                </a>
+                            </li>
+                        @endrole
                     </ul>
                 </div>
                 <!-- Sidebar -->

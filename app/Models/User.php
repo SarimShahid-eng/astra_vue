@@ -37,8 +37,13 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
-    public function role_data(){
-        return $this->hasOne(Role::class,'id','role');
+    public function role_data()
+    {
+        return $this->hasOne(Role::class, 'id', 'role');
+    }
+    public function hasAnyRole(array $roles)
+    {
+        return in_array($this->role, $roles);
     }
     /**
      * The attributes that should be cast.

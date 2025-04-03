@@ -23,7 +23,7 @@ class LoginController extends Controller
 
     use AuthenticatesUsers;
 
-   
+
     protected $redirectTo = RouteServiceProvider::HOME;
 
     public function showLoginForm()
@@ -41,6 +41,8 @@ class LoginController extends Controller
                 return redirect()->route('home');
             case 'user':
                 return redirect()->route('profile');
+            case 'distributor':
+                return redirect()->route('device_info.add');
         }
     }
 }

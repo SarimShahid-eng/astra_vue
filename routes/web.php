@@ -9,6 +9,9 @@ use App\Http\Controllers\FrontEnd\HomeController as UserHomeController;
 use App\Http\Controllers\Administrator\RoleController;
 use App\Http\Controllers\Administrator\FrontPageController;
 use App\Http\Controllers\BusinessController;
+use App\Http\Controllers\DeviceConfigurationController;
+use App\Http\Controllers\DeviceProductController;
+use App\Http\Controllers\DeviceRegistrationController;
 use App\Http\Controllers\DistributorController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -34,6 +37,27 @@ Route::middleware(['auth', 'checkRole:user'])->prefix('user')->group(function ()
         Route::post('add_complain', 'add_complain')->name('user.add_complain');
     });
 });
+// for distributors
+// Route::middleware(['auth', 'checkRole:distributor'])->prefix('distributor')->group(function () {
+
+// });
+// for distributors
+Route::middleware(['auth', 'checkRole:distributor'])->group(function () {
+    Route::controller(DeviceRegistrationController::class)->group(function () {
+        Route::get('device-info-index', 'index')->name('device_info.index');
+        Route::get('device-info-add', 'create')->name('device_info.add');
+        Route::post('device-info-store-page', 'store')->name('device_info.save');
+        Route::get('device-info-edit-page/{id}', 'edit')->name('device_info.edit');
+        Route::get('device-info-get-configurations/{id}', 'get_configurations')->name('device_info.get_configurations');
+        Route::get('device-info-delete/{id}', 'destroy')->name('device_info.delete');
+    });
+});
+// common for distributors and admin
+// Route::middleware(['auth', 'checkRole:distributor,admin'])->prefix('distributor')->group(function () {
+//     Route::controller(DistributorController::class)->group(function () {
+
+//     });
+// });
 Route::middleware(['auth', 'checkRole:admin'])->prefix('admin')->group(function () {
 
     //User Controller
@@ -79,14 +103,7 @@ Route::middleware(['auth', 'checkRole:admin'])->prefix('admin')->group(function 
         Route::get('business-edit/{id}', 'edit')->name('business.edit');
         Route::get('business-delete/{id}', 'destroy')->name('business.delete');
     });
-    Route::controller(DistributorController::class)->group(function () {
-        Route::get('distributor-show', 'index')->name('distributor.index');
-        Route::get('distributor-add', 'create')->name('distributor.add');
-        Route::post('distributor-store', 'store')->name('distributor.store');
-        Route::get('distributor-edit/{id}', 'edit')->name('distributor.edit');
-        Route::get('distributor-delete/{id}', 'destroy')->name('distributor.delete');
-        Route::post('get-distributor-country-dialcode', 'get_distributor_country_dialcode')->name('distributor.get_distributor_country_dialcode');
-    });
+
     Route::controller(FrontPageController::class)->group(function () {
         Route::get('front-page', 'index')->name('front.index');
         Route::get('front-page-edit/{id}/{data}', 'edit')->name('front.edit');
@@ -128,6 +145,28 @@ Route::middleware(['auth', 'checkRole:admin'])->prefix('admin')->group(function 
     });
 
     Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+    Route::controller(DistributorController::class)->group(function () {
+        Route::get('distributor-show', 'index')->name('distributor.index');
+        Route::get('distributor-edit/{id}', 'edit')->name('distributor.edit');
+        Route::get('distributor-delete/{id}', 'destroy')->name('distributor.delete');
+        Route::post('distributor-store', 'store')->name('distributor.store');
+        Route::post('get-distributor-country-dialcode', 'get_distributor_country_dialcode')->name('distributor.get_distributor_country_dialcode');
+        Route::get('distributor-add', 'create')->name('distributor.add');
+    });
+    Route::controller(DeviceProductController::class)->group(function () {
+        Route::get('device-product-index', 'index')->name('device_info.product_index');
+        Route::get('device-product-edit/{id}', 'edit')->name('device_info.product_edit');
+        Route::get('device-product-add', 'create')->name('device_info.product_add');
+        Route::post('device-product-save', 'store')->name('device_info.product_store');
+        Route::get('device-info-delete/{id}', 'destroy')->name('device_info.product_delete');
+    });
+    Route::controller(DeviceConfigurationController::class)->group(function () {
+        Route::get('device-config-index', 'index')->name('device_info.product_config_index');
+        Route::get('device-config-edit/{id}', 'edit')->name('device_info.product_config_edit');
+        Route::get('device-config-add', 'create')->name('device_info.product_config_add');
+        Route::post('device-config-save', 'store')->name('device_info.product_config_store');
+        Route::get('device-config-delete/{id}', 'destroy')->name('device_info.product_config_delete');
+    });
 });
 Route::controller(UserHomeController::class)->group(function () {
     Route::get('/', 'index')->name('index');
